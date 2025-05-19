@@ -5,7 +5,11 @@ const authRoutes = require('./routes/auth'); // Aquí importamos las rutas de au
 const tareasRoutes = require('./routes/tareas'); // Aquí importamos las rutas agrupadas
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+});
+
 
 app.use(cors());
 app.use(express.json());
