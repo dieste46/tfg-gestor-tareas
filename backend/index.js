@@ -14,6 +14,19 @@ app.use('/api', authRoutes) // habilitamos las rutas de autenticación
 // Agrupamos todas las rutas de tareas bajo /api/tareas
 app.use('/api/tareas', tareasRoutes);
 
+// Sincronizamos la base de datos
+const { sequelize } = require('./models');
+
+sequelize.sync({ alter: true })
+  .then(() => {
+    console.log('✅ Migraciones ejecutadas correctamente');
+    process.exit();
+  })
+  .catch((error) => {
+    console.error('❌ Error al ejecutar migraciones:', error);
+    process.exit(1);
+  });
+
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
