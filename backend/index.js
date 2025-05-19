@@ -1,36 +1,27 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const authRoutes = require('./routes/auth'); // Aquí importamos las rutas de autenticación
-const tareasRoutes = require('./routes/tareas'); // Aquí importamos las rutas agrupadas
+const authRoutes = require('./routes/auth');
+const tareasRoutes = require('./routes/tareas');
+const { sequelize } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
-});
-
 
 app.use(cors());
 app.use(express.json());
-app.use('/api', authRoutes) // habilitamos las rutas de autenticación
-
-// Agrupamos todas las rutas de tareas bajo /api/tareas
+app.use('/api', authRoutes);
 app.use('/api/tareas', tareasRoutes);
 
-// Sincronizamos la base de datos
-const { sequelize } = require('./models');
-
-sequelize.sync({ alter: true })
+// Sincronizar la base de datos y arrancar el servidor
+sequelize.sync()
   .then(() => {
-    console.log('✅ Migraciones ejecutadas correctamente');
-    process.exit();
+    console.log('Base de datos sincronizada');
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+    });
   })
   .catch((error) => {
-    console.error('❌ Error al ejecutar migraciones:', error);
-    process.exit(1);
+    console.error('Error al sincronizar la base de datos:', error);
   });
-
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
