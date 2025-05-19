@@ -1,0 +1,102 @@
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input,
+textarea,
+select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn.create {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn.update {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn.edit {
+  background-color: #ffc107;
+  color: #333;
+  margin-right: 5px;
+}
+
+.btn.delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.tarea-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.tarea-item {
+  background: #f9f9f9;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-left: 5px solid #007bff;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 10px;
+  color: #888;
+  font-size: 14px;
+}
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #030d17;
+  margin-bottom: 10px;
+}
