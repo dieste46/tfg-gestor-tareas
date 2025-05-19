@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const API = 'https://tfg-gestor-tareas.onrender.com/api';
+
 function App() {
   const [tareas, setTareas] = useState([]);
   const [titulo, setTitulo] = useState('');
@@ -30,7 +32,7 @@ function App() {
   const cargarTareas = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.get('http://localhost:4000/api/tareas', {
+      const res = await axios.get(`${API}/tareas`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTareas(res.data);
@@ -45,7 +47,7 @@ function App() {
 
   const login = async () => {
     try {
-      const res = await axios.post('http://localhost:4000/api/login', {
+      const res = await axios.post(`${API}/login`, {
         email,
         password
       });
@@ -60,7 +62,7 @@ function App() {
 
   const registrar = async () => {
     try {
-      await axios.post('http://localhost:4000/api/registro', {
+      await axios.post(`${API}/registro`, {
         nombre,
         email,
         password
@@ -75,7 +77,7 @@ function App() {
     if (!titulo) return;
     const token = localStorage.getItem('token');
     try {
-      await axios.post('http://localhost:4000/api/tareas', {
+      await axios.post(`${API}/tareas`, {
         titulo,
         descripcion,
         fecha_limite: fechaLimite,
@@ -96,7 +98,7 @@ function App() {
     if (!titulo || !editandoId) return;
     const token = localStorage.getItem('token');
     try {
-      await axios.put(`http://localhost:4000/api/tareas/${editandoId}`, {
+      await axios.put(`${API}/tareas/${editandoId}`, {
         titulo,
         descripcion,
         fecha_limite: fechaLimite,
@@ -116,7 +118,7 @@ function App() {
   const eliminarTarea = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:4000/api/tareas/${id}`, {
+      await axios.delete(`${API}/tareas/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       cargarTareas();

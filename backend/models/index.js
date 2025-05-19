@@ -8,6 +8,10 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 require('dotenv').config();
 const config = require(__dirname + '/../config/config.js')[env];
+if (!config) {
+  throw new Error(`No se encontró configuración para el entorno '${env}'`);
+}
+
 
 const db = {};
 
