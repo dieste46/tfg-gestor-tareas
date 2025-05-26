@@ -15,7 +15,7 @@ function Registro() {
     setMensaje('');
 
     try {
-      const respuesta = await fetch('http://localhost:4000/api/auth/registro', {
+      const respuesta = await fetch('https://tfg-gestor-tareas.onrender.com/api/auth/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
