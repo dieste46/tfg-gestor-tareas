@@ -13,7 +13,7 @@ function Login({ onLogin }) {
     setError('');
 
     try {
-      const respuesta = await fetch('https://tfg-gestor-tareas.vercel.app', {
+      const respuesta = await fetch('https://tfg-gestor-tareas.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
