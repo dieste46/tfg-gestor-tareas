@@ -1,264 +1,57 @@
-import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-const API = 'https://tfg-gestor-tareas.onrender.com/api';
+import Login from './pages/Login';
+import Registro from './pages/Registro';
+import Tareas from './pages/Tareas';
+import Navbar from './components/Navbar';
 
 function App() {
-  const [tareas, setTareas] = useState([]);
-  const [titulo, setTitulo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [fechaLimite, setFechaLimite] = useState('');
-  const [prioridad, setPrioridad] = useState('media');
-  const [completada, setCompletada] = useState(false);
-  const [editandoId, setEditandoId] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const [email, setEmail] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [password, setPassword] = useState('');
-  const [autenticado, setAutenticado] = useState(false);
-  const [usuarioNombre, setUsuarioNombre] = useState('');
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setAutenticado(false);
-    setTareas([]);
-    setUsuarioNombre('');
-    setEmail('');
-    setPassword('');
-    setNombre('');
-  };
-
-  const cargarTareas = useCallback(async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const res = await axios.get(`${API}/tareas`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTareas(res.data);
-    } catch (error) {
-      if (error.response?.status === 401) {
-        logout();
-      } else {
-        alert('Error al cargar las tareas');
-      }
+  useEffect(() => {
+    const almacenado = localStorage.getItem('token');
+    if (almacenado) {
+      setToken(almacenado);
     }
   }, []);
 
-  const login = async () => {
-    try {
-      const res = await axios.post(`${API}/login`, {
-        email,
-        password
-      });
-      localStorage.setItem('token', res.data.token);
-      setUsuarioNombre(res.data.nombre || email);
-      setAutenticado(true);
-      cargarTareas();
-    } catch (error) {
-      alert('Error al iniciar sesión');
-    }
+  const manejarLogin = (nuevoToken) => {
+    localStorage.setItem('token', nuevoToken);
+    setToken(nuevoToken);
   };
 
-  const registrar = async () => {
-    try {
-      await axios.post(`${API}/registro`, {
-        nombre,
-        email,
-        password
-      });
-      alert('Usuario registrado. Ahora puedes iniciar sesión.');
-    } catch (error) {
-      alert('Error al registrar usuario');
-    }
+  const manejarLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
   };
-
-  const crearTarea = async () => {
-    if (!titulo) return;
-    const token = localStorage.getItem('token');
-    try {
-      await axios.post(`${API}/tareas`, {
-        titulo,
-        descripcion,
-        fecha_limite: fechaLimite,
-        prioridad,
-        completada: false
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      limpiarFormulario();
-      cargarTareas();
-    } catch (error) {
-      if (error.response?.status === 401) logout();
-      else alert('Error al crear tarea');
-    }
-  };
-
-  const actualizarTarea = async () => {
-    if (!titulo || !editandoId) return;
-    const token = localStorage.getItem('token');
-    try {
-      await axios.put(`${API}/tareas/${editandoId}`, {
-        titulo,
-        descripcion,
-        fecha_limite: fechaLimite,
-        prioridad,
-        completada
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      limpiarFormulario();
-      cargarTareas();
-    } catch (error) {
-      if (error.response?.status === 401) logout();
-      else alert('Error al actualizar tarea');
-    }
-  };
-
-  const eliminarTarea = async (id) => {
-    const token = localStorage.getItem('token');
-    try {
-      await axios.delete(`${API}/tareas/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      cargarTareas();
-    } catch (error) {
-      if (error.response?.status === 401) logout();
-      else alert('Error al eliminar tarea');
-    }
-  };
-
-  const empezarEdicion = (tarea) => {
-    setTitulo(tarea.titulo);
-    setDescripcion(tarea.descripcion);
-    setFechaLimite(tarea.fecha_limite?.split('T')[0] || '');
-    setPrioridad(tarea.prioridad);
-    setCompletada(tarea.completada);
-    setEditandoId(tarea.id);
-  };
-
-  const limpiarFormulario = () => {
-    setTitulo('');
-    setDescripcion('');
-    setFechaLimite('');
-    setPrioridad('media');
-    setCompletada(false);
-    setEditandoId(null);
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setAutenticado(true);
-      setUsuarioNombre('(usuario)');
-      cargarTareas();
-    }
-  }, [cargarTareas]);
-
-  if (!autenticado) {
-    return (
-      <div className="container">
-        <h1>Gestor de Tareas - Login</h1>
-        <div className="form">
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="btn create" onClick={login}>Iniciar sesión</button>
-          <button className="btn update" onClick={registrar}>Registrarse</button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container">
-      <div className="header">
-        <h1>Gestor de Tareas</h1>
-        <div className="usuario-info">
-          <span>Hola, {usuarioNombre}</span>
-          <button onClick={logout} className="btn delete">Salir</button>
-        </div>
-      </div>
-
-      <div className="form">
-        <input
-          type="text"
-          placeholder="Título"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
+    <Router>
+      <Navbar token={token} onLogout={manejarLogout} />
+      <Routes>
+        <Route
+          path="/"
+          element={token ? <Navigate to="/tareas" /> : <Navigate to="/login" />}
         />
-
-        <textarea
-          placeholder="Descripción"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          rows={3}
+        <Route
+          path="/login"
+          element={token ? <Navigate to="/tareas" /> : <Login onLogin={manejarLogin} />}
         />
-
-        <input
-          type="date"
-          value={fechaLimite}
-          onChange={(e) => setFechaLimite(e.target.value)}
+        <Route
+          path="/registro"
+          element={token ? <Navigate to="/tareas" /> : <Registro />}
         />
-
-        <select value={prioridad} onChange={(e) => setPrioridad(e.target.value)}>
-          <option value="alta">Alta</option>
-          <option value="media">Media</option>
-          <option value="baja">Baja</option>
-        </select>
-
-        {editandoId && (
-          <label>
-            <input
-              type="checkbox"
-              checked={completada}
-              onChange={(e) => setCompletada(e.target.checked)}
-            />
-            Completada
-          </label>
-        )}
-
-        {editandoId ? (
-          <button className="btn update" onClick={actualizarTarea}>Actualizar</button>
-        ) : (
-          <button className="btn create" onClick={crearTarea}>Crear</button>
-        )}
-      </div>
-
-      <ul className="tarea-lista">
-        {tareas.map((tarea) => (
-          <li key={tarea.id} className="tarea-item">
-            <div>
-              <strong>{tarea.titulo}</strong> - {tarea.descripcion}<br />
-              <small>{tarea.prioridad} | {tarea.fecha_limite?.split('T')[0]} | {tarea.completada ? '✅' : '❌'}</small>
-            </div>
-            <div>
-              <button onClick={() => empezarEdicion(tarea)} className="btn edit">Editar</button>
-              <button onClick={() => eliminarTarea(tarea.id)} className="btn delete">Eliminar</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <footer className="footer">
-        <p>Desarrollado por Jorge Dieste © 2025</p>
-      </footer>
-    </div>
+        <Route
+          path="/tareas"
+          element={token ? <Tareas token={token} /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="*"
+          element={<h2 style={{ padding: "2rem" }}>404 - Página no encontrada</h2>}
+        />
+      </Routes>
+    </Router>
   );
 }
 
