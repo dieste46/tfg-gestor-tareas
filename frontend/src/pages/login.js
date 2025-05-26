@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [verPassword, setVerPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -45,12 +46,21 @@ function Login({ onLogin }) {
         />
 
         <input
-          type="password"
+          type={verPassword ? 'text' : 'password'}
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={verPassword}
+            onChange={(e) => setVerPassword(e.target.checked)}
+          />
+          Mostrar contraseña
+        </label>
 
         <button type="submit">Entrar</button>
         {error && <p className="error">{error}</p>}

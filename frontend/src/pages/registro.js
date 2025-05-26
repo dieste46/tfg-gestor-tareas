@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function Registro() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [verPassword, setVerPassword] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -47,12 +48,21 @@ function Registro() {
         />
 
         <input
-          type="password"
+          type={verPassword ? 'text' : 'password'}
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={verPassword}
+            onChange={(e) => setVerPassword(e.target.checked)}
+          />
+          Mostrar contraseña
+        </label>
 
         <button type="submit">Registrarse</button>
         {mensaje && <p className="mensaje">{mensaje}</p>}
@@ -63,4 +73,3 @@ function Registro() {
 }
 
 export default Registro;
-// Este componente permite a los usuarios registrarse creando una cuenta nueva.
