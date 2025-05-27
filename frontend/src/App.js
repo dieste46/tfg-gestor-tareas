@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Login from './pages/login';
 import Registro from './pages/registro';
 import Tareas from './pages/tareas';
-import Navbar from './components/Navbaravbar';
+import Navbar from './components/navbar';
 
 function App() {
   const [token, setToken] = useState(null);
