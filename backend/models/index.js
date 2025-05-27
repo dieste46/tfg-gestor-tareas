@@ -23,7 +23,7 @@ const db = {};
 //}
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-
+// Cargar todos los modelos en el directorio actual
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -39,6 +39,7 @@ fs
     db[model.name] = model;
   });
 
+// Asociar los modelos
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

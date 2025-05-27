@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import Login from './pages/Login';
-import Registro from './pages/Registro';
-import Tareas from './pages/Tareas';
-import Navbar from './components/Navbar';
+import Login from './pages/login';
+import Registro from './pages/registro';
+import Tareas from './pages/tareas';
+import Navbar from './components/Navbaravbar';
 
 function App() {
   const [token, setToken] = useState(null);

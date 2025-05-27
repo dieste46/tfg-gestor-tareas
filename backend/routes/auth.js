@@ -30,3 +30,4 @@ router.post('/registro', [
 });
 
 module.exports = router;
+// Exportamos el router para usarlo en el servidor principal
