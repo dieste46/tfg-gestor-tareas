@@ -1,0 +1,146 @@
+{
+  "navbar": {
+    "brand": "Gestor de Tareas",
+    "myTasks": "Mis Tareas",
+    "login": "Iniciar Sesión",
+    "register": "Registro",
+    "logout": "Cerrar Sesión",
+    "greeting": "Hola, {{name}}",
+    "toggleTheme": "Cambiar a modo {{mode}}",
+    "dark": "oscuro",
+    "light": "claro"
+  },
+  
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Accede a tu gestor de tareas",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "showPassword": "Mostrar contraseña",
+      "loginButton": "Iniciar Sesión",
+      "loginButtonLoading": "Iniciando sesión...",
+      "noAccount": "¿No tienes cuenta?",
+      "registerLink": "Regístrate aquí",
+      "emailRequired": "El correo electrónico es requerido",
+      "emailInvalid": "Por favor ingresa un correo electrónico válido",
+      "passwordRequired": "La contraseña es requerida",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "connectionError": "Error de conexión. Verifica que el servidor esté funcionando.",
+      "loginFailed": "Error al iniciar sesión. Inténtalo de nuevo."
+    },
+    
+    "register": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únete al gestor de tareas",
+      "name": "Nombre ({{optional}})",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "showPasswords": "Mostrar contraseñas",
+      "createButton": "Crear Cuenta",
+      "createButtonLoading": "Creando cuenta...",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Inicia sesión aquí",
+      "success": "¡Registro exitoso! Redirigiendo al login...",
+      "emailRequired": "El email es requerido",
+      "passwordRequired": "La contraseña es requerida",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "connectionError": "Error de conexión con el servidor"
+    }
+  },
+  
+  "tasks": {
+    "loading": "Cargando tus tareas...",
+    "stats": {
+      "total": "Total",
+      "pending": "Pendientes",
+      "completed": "Completadas",
+      "overdue": "Vencidas"
+    },
+    
+    "form": {
+      "newTask": "📝 Nueva Tarea",
+      "titlePlaceholder": "Título de la tarea",
+      "descriptionPlaceholder": "Descripción ({{optional}}) - Añade más detalles sobre la tarea...",
+      "priority": {
+        "baja": "Baja",
+        "media": "Media",
+        "alta": "Alta"
+      },
+      "addButton": "➕ Agregar",
+      "addButtonLoading": "Agregando...",
+      "titleRequired": "El título de la tarea es requerido"
+    },
+    
+    "filters": {
+      "status": "Estado:",
+      "priority": "Prioridad:",
+      "statusOptions": {
+        "todas": "Todas",
+        "pendientes": "Pendientes",
+        "completadas": "Completadas"
+      },
+      "priorityOptions": {
+        "todas": "Todas",
+        "alta": "🔴 Alta",
+        "media": "🟡 Media",
+        "baja": "🟢 Baja"
+      }
+    },
+    
+    "item": {
+      "markComplete": "Marcar como completada",
+      "markPending": "Marcar como pendiente",
+      "deleteTask": "Eliminar tarea",
+      "deleteConfirm": "¿Estás seguro de eliminar la tarea \"{{title}}\"?",
+      "createdOn": "Creada: {{date}}",
+      "today": "Hoy",
+      "tomorrow": "Mañana"
+    },
+    
+    "empty": {
+      "noTasks": {
+        "title": "¡Comienza a organizarte!",
+        "description": "Agrega tu primera tarea usando el formulario de arriba."
+      },
+      "noFiltered": {
+        "title": "No hay tareas que coincidan con los filtros",
+        "description": "Prueba cambiando los filtros para ver más tareas."
+      }
+    },
+    
+    "errors": {
+      "loadFailed": "Error de conexión al cargar tareas",
+      "createFailed": "Error de conexión al crear tarea",
+      "updateFailed": "Error al actualizar tarea",
+      "deleteFailed": "Error al eliminar tarea",
+      "sessionExpired": "Sesión expirada"
+    }
+  },
+  
+  "errors": {
+    "pageNotFound": {
+      "title": "Página no encontrada",
+      "description": "La página que buscas no existe o ha sido movida.",
+      "goBack": "← Volver atrás",
+      "goHome": "🏠 Ir al inicio"
+    },
+    "appError": {
+      "title": "Error de aplicación",
+      "reload": "🔄 Recargar página"
+    }
+  },
+  
+  "footer": {
+    "text": "Gestor de Tareas Web - TFG {{year}} | Desarrollado por Jorge Dieste Fuentes"
+  },
+  
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "optional": "opcional"
+  }
+}

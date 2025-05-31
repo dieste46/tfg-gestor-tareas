@@ -1,0 +1,146 @@
+{
+  "navbar": {
+    "brand": "Task Manager",
+    "myTasks": "My Tasks",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "greeting": "Hello, {{name}}",
+    "toggleTheme": "Switch to {{mode}} mode",
+    "dark": "dark",
+    "light": "light"
+  },
+  
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Access your task manager",
+      "email": "Email address",
+      "password": "Password",
+      "showPassword": "Show password",
+      "loginButton": "Sign In",
+      "loginButtonLoading": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up here",
+      "emailRequired": "Email address is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "connectionError": "Connection error. Please check if the server is running.",
+      "loginFailed": "Login failed. Please try again."
+    },
+    
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the task manager",
+      "name": "Name ({{optional}})",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "showPasswords": "Show passwords",
+      "createButton": "Create Account",
+      "createButtonLoading": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in here",
+      "success": "Registration successful! Redirecting to login...",
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "connectionError": "Connection error with server"
+    }
+  },
+  
+  "tasks": {
+    "loading": "Loading your tasks...",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "completed": "Completed",
+      "overdue": "Overdue"
+    },
+    
+    "form": {
+      "newTask": "📝 New Task",
+      "titlePlaceholder": "Task title",
+      "descriptionPlaceholder": "Description ({{optional}}) - Add more details about the task...",
+      "priority": {
+        "baja": "Low",
+        "media": "Medium",
+        "alta": "High"
+      },
+      "addButton": "➕ Add",
+      "addButtonLoading": "Adding...",
+      "titleRequired": "Task title is required"
+    },
+    
+    "filters": {
+      "status": "Status:",
+      "priority": "Priority:",
+      "statusOptions": {
+        "todas": "All",
+        "pendientes": "Pending",
+        "completadas": "Completed"
+      },
+      "priorityOptions": {
+        "todas": "All",
+        "alta": "🔴 High",
+        "media": "🟡 Medium",
+        "baja": "🟢 Low"
+      }
+    },
+    
+    "item": {
+      "markComplete": "Mark as completed",
+      "markPending": "Mark as pending",
+      "deleteTask": "Delete task",
+      "deleteConfirm": "Are you sure you want to delete the task \"{{title}}\"?",
+      "createdOn": "Created: {{date}}",
+      "today": "Today",
+      "tomorrow": "Tomorrow"
+    },
+    
+    "empty": {
+      "noTasks": {
+        "title": "Get organized!",
+        "description": "Add your first task using the form above."
+      },
+      "noFiltered": {
+        "title": "No tasks match the current filters",
+        "description": "Try changing the filters to see more tasks."
+      }
+    },
+    
+    "errors": {
+      "loadFailed": "Connection error loading tasks",
+      "createFailed": "Connection error creating task",
+      "updateFailed": "Error updating task",
+      "deleteFailed": "Error deleting task",
+      "sessionExpired": "Session expired"
+    }
+  },
+  
+  "errors": {
+    "pageNotFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist or has been moved.",
+      "goBack": "← Go back",
+      "goHome": "🏠 Go home"
+    },
+    "appError": {
+      "title": "Application error",
+      "reload": "🔄 Reload page"
+    }
+  },
+  
+  "footer": {
+    "text": "Task Manager Web - Final Project {{year}} | Developed by Jorge Dieste Fuentes"
+  },
+  
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "optional": "optional"
+  }
+}

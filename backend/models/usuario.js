@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     nombre: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true, // OPCIONAL
       validate: {
         len: {
           args: [0, 100],
@@ -38,10 +38,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // Opcional: métodos personalizados o relaciones
-  // Usuario.associate = function(models) {
-  //   // Relación con otras tablas si las hubiera
-  // };
+  // Relación con Tareas
+  Usuario.associate = function(models) {
+    Usuario.hasMany(models.Tarea, {
+      foreignKey: 'usuarioId',
+      as: 'tareas'
+    });
+  };
 
   return Usuario;
 };
