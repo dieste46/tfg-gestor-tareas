@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
-import './i18n'; // ← IMPORTANTE: Importar configuración de i18n
+import './i18n'; // Importar configuración de i18n
 
 // Componentes
 import Login from './pages/login';
@@ -10,49 +10,60 @@ import Registro from './pages/registro';
 import Tareas from './pages/tareas';
 import Navbar from './components/navbar';
 
-// Componente de Loading
-const LoadingScreen = () => {
-  const { t } = useTranslation();
+// Validar si un JWT ha expirado decodificando su payload
+const isTokenExpired = (token) => {
+  if (!token) return true;
   
-  return (
-    <div className="loading-screen">
-      <div className="loading-content">
-        <div className="spinner-large"></div>
-        <h2>{t('navbar.brand')}</h2>
-        <p>{t('common.loading')}</p>
-      </div>
-    </div>
-  );
+  try {
+    // Decodificar payload del JWT (parte central en base64)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    
+    // Verificar expiración comparando con timestamp actual
+    return payload.exp * 1000 < Date.now();
+  } catch (error) {
+    // Token malformado, considerar como expirado
+    return true;
+  }
+};
+// Limpiar sesión eliminando token y usuario del localStorage
+
+const clearSession = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
 };
 
+// Componente de Loading
+const LoadingScreen = () => (
+  <div className="loading-screen">
+    <div className="loading-content">
+      <div className="spinner-large"></div>
+      <h2>Gestor de Tareas</h2>
+      <p>Cargando aplicación...</p>
+    </div>
+  </div>
+);
+
 // Componente de Error 404
-const NotFound = () => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="error-page">
-      <div className="error-content">
-        <h1>404</h1>
-        <h2>{t('errors.pageNotFound.title')}</h2>
-        <p>{t('errors.pageNotFound.description')}</p>
-        <div className="error-actions">
-          <button 
-            onClick={() => window.history.back()}
-            className="btn secondary"
-          >
-            {t('errors.pageNotFound.goBack')}
-          </button>
-          <button 
-            onClick={() => window.location.href = '/'}
-            className="btn primary"
-          >
-            {t('errors.pageNotFound.goHome')}
-          </button>
-        </div>
+const NotFound = () => (
+  <div className="error-page">
+    <div className="error-content">
+      <h1>404</h1>
+      <h2>Página no encontrada</h2>
+      <p>La página que buscas no existe o ha sido movida.</p>
+      <div className="error-actions">
+        <button 
+          onClick={() => window.history.back()}
+          className="btn secondary"
+        >
+          ← Volver atrás
+        </button>
+        <Navigate to="/" className="btn primary">
+          🏠 Ir al inicio
+        </Navigate>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 function App() {
   const [token, setToken] = useState(null);
@@ -69,23 +80,26 @@ function App() {
         const storedUser = localStorage.getItem('user');
         
         if (storedToken) {
-          setToken(storedToken);
-          
-          if (storedUser) {
-            try {
-              setUser(JSON.parse(storedUser));
-            } catch (error) {
-              console.error('Error al parsear usuario almacenado:', error);
-              localStorage.removeItem('user');
+          // Validar token antes de establecer sesión
+          if (isTokenExpired(storedToken)) {
+            clearSession();
+          } else {
+            setToken(storedToken);
+            
+            if (storedUser) {
+              try {
+                setUser(JSON.parse(storedUser));
+              } catch (error) {
+                console.error('Error al parsear usuario almacenado:', error);
+                localStorage.removeItem('user');
+              }
             }
           }
         }
       } catch (error) {
         console.error('Error al inicializar la aplicación:', error);
-        setAppError(t('errors.appError.title'));
-        // Limpiar datos corruptos
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        setAppError('Error al inicializar la aplicación');
+        clearSession();
       } finally {
         setIsLoading(false);
       }
@@ -111,12 +125,11 @@ function App() {
       setAppError('Error al guardar la sesión');
     }
   };
-
-  // Limpiar usuario al cerrar sesión
+  
+// Limpiar sesión al cerrar sesión
   const handleLogout = () => {
     try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      clearSession();
       setToken(null);
       setUser(null);
     } catch (error) {
@@ -151,13 +164,13 @@ function App() {
       <div className="error-page">
         <div className="error-content">
           <h1>⚠️</h1>
-          <h2>{t('errors.appError.title')}</h2>
+          <h2>Error de aplicación</h2>
           <p>{appError}</p>
           <button 
             onClick={() => window.location.reload()}
             className="btn primary"
           >
-            {t('errors.appError.reload')}
+            🔄 Recargar página
           </button>
         </div>
       </div>
@@ -167,6 +180,7 @@ function App() {
   return (
     <Router>
       <div className="app">
+        {/* ← CORREGIDO: Pasar user correctamente */}
         <Navbar token={token} user={user} onLogout={handleLogout} />
         
         <main className="main-content">
@@ -211,10 +225,11 @@ function App() {
           </Routes>
         </main>
 
-        {/* Footer */}
+        {/* Footer opcional */}
         <footer className="app-footer">
           <p>
-            {t('footer.text', { year: new Date().getFullYear() })}
+            Gestor de Tareas Web - TFG {new Date().getFullYear()} | 
+            Desarrollado por Jorge Dieste Fuentes
           </p>
         </footer>
       </div>
