@@ -2,7 +2,7 @@ const { Usuario } = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-// ✅ MEJORADO - Fallar si no existe JWT_SECRET
+// Fallar si no existe JWT_SECRET
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET es requerido en variables de entorno');
@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // ✅ Log seguro - no incluir datos sensibles
+    // Log seguro - no incluir datos sensibles
     console.log(`Login exitoso: ${usuario.email} - ${new Date().toISOString()}`);
 
     // Respuesta exitosa
@@ -55,8 +55,9 @@ exports.login = async (req, res) => {
       }
     });
 
+// Manejo de errores
   } catch (error) {
-    console.error('Error en login:', error.message); // ✅ Solo el mensaje, no el stack completo
+    console.error('Error en login:', error.message); // Solo el mensaje, no el stack completo
     res.status(500).json({ 
       error: 'Error interno del servidor' 
     });
@@ -90,7 +91,7 @@ exports.registro = async (req, res) => {
       nombre: nombre?.trim() || null
     });
 
-    // ✅ Log seguro
+    // Log seguro
     console.log(`Usuario registrado: ${nuevoUsuario.email} - ${new Date().toISOString()}`);
 
     // Respuesta exitosa

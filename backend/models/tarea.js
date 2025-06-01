@@ -1,5 +1,5 @@
 
-
+// Modelo de Tarea
 module.exports = (sequelize, DataTypes) => {
   const Tarea = sequelize.define('Tarea', {
     titulo: {

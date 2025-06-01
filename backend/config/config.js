@@ -1,6 +1,10 @@
 require('dotenv').config();
 
+// Configuración de la base de datos para diferentes entornos
+
 module.exports = {
+
+  // Configuración para desarrollo
   development: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
@@ -17,6 +21,7 @@ module.exports = {
     }
   },
   
+  // Configuración para pruebas
   test: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
@@ -26,7 +31,8 @@ module.exports = {
     dialect: process.env.DB_DIALECT,
     logging: false
   },
-  
+
+  // Configuración para producción
   production: {
     // Si existe DATABASE_URL, úsala; si no, usar variables individuales
     ...(process.env.DATABASE_URL ? {

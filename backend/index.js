@@ -5,7 +5,7 @@ const { sequelize } = require('./models');
 
 const app = express();
 
-// Configuración de CORS (sin cambios)
+// Configuración de CORS
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -15,7 +15,7 @@ const corsOptions = {
       'http://localhost:3001',
       process.env.FRONTEND_URL,
     ];
-    
+    // Permitir dominios de Vercel y localhost en desarrollo
     if (origin && origin.includes('.vercel.app')) {
       return callback(null, true);
     }
@@ -23,7 +23,7 @@ const corsOptions = {
     if (process.env.NODE_ENV !== 'production' && origin && origin.includes('localhost')) {
       return callback(null, true);
     }
-    
+    // Verificar si el origen está en la lista de permitidos
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -116,7 +116,7 @@ const testDirectConnection = async () => {
         rejectUnauthorized: false
       }
     });
-    
+    // Mostrar configuración de conexión
     console.log('🔍 Configuración pg directa:', {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
@@ -124,7 +124,7 @@ const testDirectConnection = async () => {
       user: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD ? '****' : 'NO CONFIGURADO'
     });
-    
+    // Conectar al cliente pg
     await client.connect();
     console.log('✅ Conexión DIRECTA con pg exitosa!');
     
@@ -133,6 +133,7 @@ const testDirectConnection = async () => {
     
     await client.end();
     
+  // Manejo de errores
   } catch (error) {
     console.log('❌ Error en conexión directa pg:', {
       message: error.message,

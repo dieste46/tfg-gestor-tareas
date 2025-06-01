@@ -5,9 +5,12 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
+// Cargar la configuración del entorno
+// Asegurarse de que las variables de entorno están cargadas
 const env = process.env.NODE_ENV || 'development';
 require('dotenv').config();
 const config = require(__dirname + '/../config/config.js')[env];
+// Verificar si la configuración es válida
 if (!config) {
   throw new Error(`No se encontró configuración para el entorno '${env}'`);
 }
@@ -15,6 +18,7 @@ if (!config) {
 
 const db = {};
 
+// Crear una instancia de Sequelize con la configuración
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
 // Cargar todos los modelos en el directorio actual

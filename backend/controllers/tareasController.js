@@ -1,5 +1,8 @@
 const { Tarea } = require('../models');
 
+// Este controlador maneja las operaciones CRUD para las tareas de un usuario autenticado.
+
+// Obtener todas las tareas del usuario autenticado
 exports.obtenerTareas = async (req, res) => {
   try {
     const tareas = await Tarea.findAll({
@@ -12,6 +15,7 @@ exports.obtenerTareas = async (req, res) => {
   }
 };
 
+// Obtener una tarea específica por ID
 exports.crearTarea = async (req, res) => {
   try {
     const { titulo, descripcion, fecha_limite, prioridad } = req.body;
@@ -28,6 +32,7 @@ exports.crearTarea = async (req, res) => {
   }
 };
 
+// Actualizar una tarea específica por ID
 exports.actualizarTarea = async (req, res) => {
   try {
     const tarea = await Tarea.findOne({
@@ -42,6 +47,7 @@ exports.actualizarTarea = async (req, res) => {
   }
 };
 
+// Eliminar una tarea específica por ID
 exports.eliminarTarea = async (req, res) => {
   try {
     const tarea = await Tarea.findOne({
