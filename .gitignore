@@ -1,6 +1,43 @@
+# ===================================
+# DEPENDENCIAS
+# ===================================
 node_modules/
+npm-debug.log*
+
+# ===================================
+# VARIABLES DE ENTORNO
+# ===================================
 .env
-.DS_Store
+.env.*
+!.env.example
+
+# ===================================
+# BUILD Y DISTRIBUCIÓN
+# ===================================
 dist/
 build/
-backend/crearUsuario.js
+frontend/build/
+
+# ===================================
+# ARCHIVOS DEL SISTEMA
+# ===================================
+.DS_Store
+Thumbs.db
+
+# ===================================
+# CACHE Y TEMPORALES
+# ===================================
+*.log
+.eslintcache
+coverage/
+
+# ===================================
+# EDITORES
+# ===================================
+.vscode/
+.idea/
+
+# ===================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ===================================
+backend/scripts/crearUsuario.js
