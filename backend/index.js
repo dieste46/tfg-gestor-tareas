@@ -16,12 +16,10 @@ const corsOptions = {
       process.env.FRONTEND_URL,
     ];
     
-    // Permitir todos los dominios .vercel.app
     if (origin && origin.includes('.vercel.app')) {
       return callback(null, true);
     }
     
-    // Desarrollo local
     if (process.env.NODE_ENV !== 'production' && origin && origin.includes('localhost')) {
       return callback(null, true);
     }
@@ -42,7 +40,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Endpoint de health check
+// Health check
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -52,17 +50,22 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Middleware de debug temporal
+// Debug middleware
 app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.path}`);
   next();
 });
 
 // Rutas
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/tareas', require('./routes/tareas'));
+try {
+  app.use('/api/auth', require('./routes/auth'));
+  app.use('/api/tareas', require('./routes/tareas'));
+  console.log('✅ Rutas cargadas exitosamente');
+} catch (error) {
+  console.error('❌ Error cargando rutas:', error.message);
+}
 
-// Manejo de errores global
+// Error handling
 app.use((err, req, res, next) => {
   console.error('Error no manejado:', err.message);
   res.status(500).json({ 
@@ -75,27 +78,30 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// Iniciar servidor PRIMERO, BD después
+// Iniciar servidor
 const PORT = process.env.PORT || 4000;
 
-// Iniciar servidor inmediatamente
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
   
-  // Debug de configuración BD
+  // 🔍 Debug detallado de DATABASE_URL
   console.log('🔍 Variables BD:', {
     hasDbUrl: !!process.env.DATABASE_URL,
     dbUrlPreview: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'No disponible',
     hasIndividualVars: !!(process.env.DB_HOST && process.env.DB_USERNAME),
-    host: process.env.DB_HOST || 'No configurado'
+    host: process.env.DB_HOST || 'No configurado',
+    // 🆕 Análisis de DATABASE_URL
+    dbUrlLength: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
+    dbUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 50) : 'N/A'
   });
 });
 
-// Conectar a BD después (sin bloquear el servidor)
+// 🔍 Conexión a BD con MUCHO más logging
 const connectDatabase = async () => {
   try {
     console.log('🔄 Intentando conectar a la base de datos...');
+    console.log('🔍 DATABASE_URL completa:', process.env.DATABASE_URL ? 'Configurada' : 'NO CONFIGURADA');
     
     let retries = 3;
     while (retries > 0) {
@@ -103,17 +109,28 @@ const connectDatabase = async () => {
         await sequelize.authenticate();
         console.log('🟢 Conexión con la base de datos establecida exitosamente');
         
-        // Sincronizar modelos solo en desarrollo
         if (process.env.NODE_ENV !== 'production') {
           await sequelize.sync();
           console.log('🔄 Modelos sincronizados');
         }
         
-        return; // Salir del bucle si la conexión es exitosa
+        return;
       } catch (error) {
         retries--;
         console.log(`❌ Error conectando a BD. Reintentos restantes: ${retries}`);
-        console.log('Detalle del error:', error.message);
+        
+        // 🆕 Logging detallado del error
+        console.log('🔍 Detalle completo del error:', {
+          message: error.message || 'Sin mensaje',
+          code: error.code || 'Sin código',
+          errno: error.errno || 'Sin errno',
+          syscall: error.syscall || 'Sin syscall',
+          hostname: error.hostname || 'Sin hostname',
+          port: error.port || 'Sin puerto',
+          address: error.address || 'Sin address',
+          name: error.name || 'Sin nombre',
+          stack: error.stack ? error.stack.split('\n')[0] : 'Sin stack'
+        });
         
         if (retries > 0) {
           await new Promise(resolve => setTimeout(resolve, 5000));
@@ -121,19 +138,18 @@ const connectDatabase = async () => {
       }
     }
     
-    // la conexión falló después de todos los intentos
     console.error('🔴 No se pudo conectar a la base de datos después de 3 intentos');
     console.error('⚠️  El servidor funcionará sin BD (algunos endpoints fallarán)');
     
   } catch (err) {
     console.error('🔴 Error general conectando BD:', err.message);
+    console.error('🔍 Error completo:', err);
   }
 };
 
-// Conectar a BD de forma asíncrona (no bloquear servidor)
 connectDatabase();
 
-// Manejo de cierre graceful
+// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('🔄 Cerrando servidor gracefully...');
   server.close(() => {
@@ -145,15 +161,12 @@ process.on('SIGTERM', () => {
   });
 });
 
-// Para debugs adicionales
 process.on('uncaughtException', (err) => {
   console.error('🚨 Uncaught Exception:', err.message);
-  // NO hacer process.exit en producción
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('🚨 Unhandled Rejection at:', promise, 'reason:', reason);
-  // NO hacer process.exit en producción
 });
 
 module.exports = app;
