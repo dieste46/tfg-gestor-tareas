@@ -85,27 +85,27 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
   
-  // 🔍 Debug detallado de DATABASE_URL
+  // Debug de DATABASE_URL
   console.log('🔍 Variables BD:', {
     hasDbUrl: !!process.env.DATABASE_URL,
     dbUrlPreview: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'No disponible',
     hasIndividualVars: !!(process.env.DB_HOST && process.env.DB_USERNAME),
     host: process.env.DB_HOST || 'No configurado',
-    // 🆕 Análisis de DATABASE_URL
     dbUrlLength: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
-    dbUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 50) : 'N/A'
+    dbUrlContainsFrankfurt: process.env.DATABASE_URL ? process.env.DATABASE_URL.includes('frankfurt') : false
   });
 });
 
-// 🔍 Conexión a BD con MUCHO más logging
+// 🔍 Conexión a BD con captura del error ORIGINAL
 const connectDatabase = async () => {
   try {
     console.log('🔄 Intentando conectar a la base de datos...');
-    console.log('🔍 DATABASE_URL completa:', process.env.DATABASE_URL ? 'Configurada' : 'NO CONFIGURADA');
+    console.log('🔍 DATABASE_URL configurada:', !!process.env.DATABASE_URL);
     
     let retries = 3;
     while (retries > 0) {
       try {
+        // 🆕 Capturar error original directamente del cliente PostgreSQL
         await sequelize.authenticate();
         console.log('🟢 Conexión con la base de datos establecida exitosamente');
         
@@ -119,18 +119,44 @@ const connectDatabase = async () => {
         retries--;
         console.log(`❌ Error conectando a BD. Reintentos restantes: ${retries}`);
         
-        // 🆕 Logging detallado del error
-        console.log('🔍 Detalle completo del error:', {
-          message: error.message || 'Sin mensaje',
-          code: error.code || 'Sin código',
-          errno: error.errno || 'Sin errno',
-          syscall: error.syscall || 'Sin syscall',
-          hostname: error.hostname || 'Sin hostname',
-          port: error.port || 'Sin puerto',
-          address: error.address || 'Sin address',
-          name: error.name || 'Sin nombre',
-          stack: error.stack ? error.stack.split('\n')[0] : 'Sin stack'
+        // 🆕 Buscar el error original anidado
+        let originalError = error;
+        
+        // Sequelize anida errores
+        if (error.original) originalError = error.original;
+        if (error.parent) originalError = error.parent;
+        if (error.cause) originalError = error.cause;
+        
+        console.log('🔍 Error Sequelize completo:', {
+          name: error.name,
+          message: error.message,
+          sql: error.sql || 'No SQL',
+          original: error.original ? 'Sí tiene original' : 'No tiene original',
+          parent: error.parent ? 'Sí tiene parent' : 'No tiene parent'
         });
+        
+        console.log('🔍 Error ORIGINAL completo:', {
+          message: originalError.message || 'Sin mensaje',
+          code: originalError.code || 'Sin código',
+          errno: originalError.errno || 'Sin errno',
+          syscall: originalError.syscall || 'Sin syscall',
+          hostname: originalError.hostname || 'Sin hostname',
+          host: originalError.host || 'Sin host',
+          port: originalError.port || 'Sin puerto',
+          address: originalError.address || 'Sin address',
+          name: originalError.name || 'Sin nombre',
+          stack: originalError.stack ? originalError.stack.split('\n')[0] : 'Sin stack'
+        });
+        
+        // 🆕 También intentar acceder a propiedades del error pg
+        if (originalError.routine) {
+          console.log('🔍 Error PostgreSQL:', {
+            routine: originalError.routine,
+            file: originalError.file,
+            line: originalError.line,
+            detail: originalError.detail
+          });
+        }
         
         if (retries > 0) {
           await new Promise(resolve => setTimeout(resolve, 5000));
@@ -142,8 +168,7 @@ const connectDatabase = async () => {
     console.error('⚠️  El servidor funcionará sin BD (algunos endpoints fallarán)');
     
   } catch (err) {
-    console.error('🔴 Error general conectando BD:', err.message);
-    console.error('🔍 Error completo:', err);
+    console.error('🔴 Error general conectando BD:', err);
   }
 };
 
