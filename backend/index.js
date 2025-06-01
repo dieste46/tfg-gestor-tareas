@@ -5,7 +5,7 @@ const { sequelize } = require('./models');
 
 const app = express();
 
-// Configuración de CORS
+// Configuración de CORS (sin cambios)
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -85,27 +85,83 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
   
-  // Debug de DATABASE_URL
-  console.log('🔍 Variables BD:', {
+  // 🔍 Debug completo de configuración
+  console.log('🔍 Variables BD completas:', {
     hasDbUrl: !!process.env.DATABASE_URL,
-    dbUrlPreview: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'No disponible',
     hasIndividualVars: !!(process.env.DB_HOST && process.env.DB_USERNAME),
-    host: process.env.DB_HOST || 'No configurado',
-    dbUrlLength: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
-    dbUrlContainsFrankfurt: process.env.DATABASE_URL ? process.env.DATABASE_URL.includes('frankfurt') : false
+    dbHost: process.env.DB_HOST || 'No configurado',
+    dbPort: process.env.DB_PORT || 'No configurado',
+    dbName: process.env.DB_NAME || 'No configurado',
+    dbUsername: process.env.DB_USERNAME ? 'Configurado' : 'No configurado',
+    dbPassword: process.env.DB_PASSWORD ? 'Configurado' : 'No configurado',
+    dbDialect: process.env.DB_DIALECT || 'No configurado'
   });
 });
 
-// 🔍 Conexión a BD con captura del error ORIGINAL
+// 🔍 Test de conexión directa con pg
+const testDirectConnection = async () => {
+  console.log('🧪 Probando conexión DIRECTA con pg...');
+  
+  try {
+    const { Client } = require('pg');
+    
+    const client = new Client({
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    });
+    
+    console.log('🔍 Configuración pg directa:', {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD ? '****' : 'NO CONFIGURADO'
+    });
+    
+    await client.connect();
+    console.log('✅ Conexión DIRECTA con pg exitosa!');
+    
+    const result = await client.query('SELECT NOW()');
+    console.log('✅ Query test exitosa:', result.rows[0]);
+    
+    await client.end();
+    
+  } catch (error) {
+    console.log('❌ Error en conexión directa pg:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      syscall: error.syscall,
+      hostname: error.hostname,
+      host: error.host,
+      port: error.port,
+      address: error.address,
+      name: error.name,
+      stack: error.stack ? error.stack.split('\n').slice(0, 3) : 'Sin stack'
+    });
+  }
+};
+
+// Conexión a BD con Sequelize + test directo
 const connectDatabase = async () => {
   try {
     console.log('🔄 Intentando conectar a la base de datos...');
-    console.log('🔍 DATABASE_URL configurada:', !!process.env.DATABASE_URL);
     
-    let retries = 3;
+    // 🧪 Primero probar conexión directa
+    await testDirectConnection();
+    
+    console.log('🔄 Ahora probando con Sequelize...');
+    
+    let retries = 1; // Solo 1 intento para no saturar logs
     while (retries > 0) {
       try {
-        // 🆕 Capturar error original directamente del cliente PostgreSQL
         await sequelize.authenticate();
         console.log('🟢 Conexión con la base de datos establecida exitosamente');
         
@@ -117,54 +173,46 @@ const connectDatabase = async () => {
         return;
       } catch (error) {
         retries--;
-        console.log(`❌ Error conectando a BD. Reintentos restantes: ${retries}`);
+        console.log(`❌ Error conectando a BD con Sequelize. Reintentos restantes: ${retries}`);
         
-        // 🆕 Buscar el error original anidado
-        let originalError = error;
+        // 🔍 Análisis PROFUNDO del error
+        console.log('🔍 ERROR COMPLETO JSON:', JSON.stringify(error, null, 2));
         
-        // Sequelize anida errores
-        if (error.original) originalError = error.original;
-        if (error.parent) originalError = error.parent;
-        if (error.cause) originalError = error.cause;
+        // Recorrer todos los niveles del error
+        let currentError = error;
+        let level = 0;
         
-        console.log('🔍 Error Sequelize completo:', {
-          name: error.name,
-          message: error.message,
-          sql: error.sql || 'No SQL',
-          original: error.original ? 'Sí tiene original' : 'No tiene original',
-          parent: error.parent ? 'Sí tiene parent' : 'No tiene parent'
-        });
-        
-        console.log('🔍 Error ORIGINAL completo:', {
-          message: originalError.message || 'Sin mensaje',
-          code: originalError.code || 'Sin código',
-          errno: originalError.errno || 'Sin errno',
-          syscall: originalError.syscall || 'Sin syscall',
-          hostname: originalError.hostname || 'Sin hostname',
-          host: originalError.host || 'Sin host',
-          port: originalError.port || 'Sin puerto',
-          address: originalError.address || 'Sin address',
-          name: originalError.name || 'Sin nombre',
-          stack: originalError.stack ? originalError.stack.split('\n')[0] : 'Sin stack'
-        });
-        
-        // 🆕 También intentar acceder a propiedades del error pg
-        if (originalError.routine) {
-          console.log('🔍 Error PostgreSQL:', {
-            routine: originalError.routine,
-            file: originalError.file,
-            line: originalError.line,
-            detail: originalError.detail
+        while (currentError && level < 5) {
+          console.log(`🔍 Error nivel ${level}:`, {
+            constructor: currentError.constructor.name,
+            name: currentError.name,
+            message: currentError.message,
+            code: currentError.code,
+            errno: currentError.errno,
+            syscall: currentError.syscall,
+            hostname: currentError.hostname,
+            host: currentError.host,
+            port: currentError.port,
+            address: currentError.address,
+            hasOriginal: !!currentError.original,
+            hasParent: !!currentError.parent,
+            hasCause: !!currentError.cause,
+            hasErrors: !!currentError.errors
           });
+          
+          // Buscar el siguiente nivel
+          currentError = currentError.original || currentError.parent || currentError.cause || 
+                        (currentError.errors && currentError.errors[0]);
+          level++;
         }
         
         if (retries > 0) {
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
         }
       }
     }
     
-    console.error('🔴 No se pudo conectar a la base de datos después de 3 intentos');
+    console.error('🔴 No se pudo conectar a la base de datos');
     console.error('⚠️  El servidor funcionará sin BD (algunos endpoints fallarán)');
     
   } catch (err) {
